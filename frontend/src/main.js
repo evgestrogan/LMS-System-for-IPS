@@ -5,6 +5,9 @@ import store from './store'
 import Axios from 'axios'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import CKEditor from '@ckeditor/ckeditor5-vue';
+
+Vue.use( CKEditor );
 
 Vue.prototype.$http = Axios;
 
@@ -16,6 +19,7 @@ if (token) {
 Vue.config.productionTip = false
 
 new Vue({
+  CKEditor,
   router,
   store,
   render: h => h(App)

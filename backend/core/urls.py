@@ -20,4 +20,5 @@ from django.urls import include
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^auth/', include('authSystem.urls')),
+    url(r'^api/', include('lms.urls')),
 ]

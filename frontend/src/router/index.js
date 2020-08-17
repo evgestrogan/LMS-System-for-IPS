@@ -2,7 +2,9 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '../store/index'
 import authentication from '../views/Authentication.vue'
-import body from '../views/body.vue'
+import body from '../views/Profile.vue'
+import edit from '../components/Editor'
+import departments_list from '../components/Departments_list'
 
 Vue.use(VueRouter)
 
@@ -13,12 +15,22 @@ Vue.use(VueRouter)
     component: authentication,
   },
   {
-    path: '/body',
-    name: 'Body',
+    path: '/profile',
+    name: 'Profile',
     component: body,
     meta: {
-        requiresAuth: true
-    }
+      requiresAuth: true
+    },
+    children: [
+      {
+        path: 'createCourse',
+        component: edit
+      },
+      {
+        path: 'departments',
+        component: departments_list
+      },
+    ]
   },
 ]
 
@@ -28,18 +40,17 @@ const router = new VueRouter({
 })
 
 router.beforeEach( (to, from, next) => {
-    if (to.matched.some(record => record.meta.requiresAuth)) {
-      store.dispatch('verifyToken')
-      .then(() => {
-        next()
-        // return
-      })
-          .catch(err => next('/'))
-    } else {
+  if (to.path === '/profile/departments') store.dispatch('get_departmets_list')
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    store.dispatch('verifyToken')
+    .then(() => {
       next()
-    }
-
-
+      // return
+    })
+        .catch(err => next('/'))
+  } else {
+    next()
+  }
 })
 
 

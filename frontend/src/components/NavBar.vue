@@ -25,7 +25,7 @@
                   </form>
                 </div>
                 <div v-else class="form-inline">
-                  <h5 class='mr-sm-2 my-2'>Привет</h5>
+                  <router-link to="/profile"  class="btn navbar-brand">Привет {{ userName.username }}</router-link>
                   <button @click="logout" class="btn btn-outline-info my-2 mr-sm-2" style="width: 190px">Log-out</button>
                 </div>
             </div>
@@ -34,7 +34,6 @@
 </template>
 <script>
   import { mapGetters } from 'vuex';
-  import store from "@/store";
 
   export default {
     name: "NavBar",
@@ -45,14 +44,14 @@
       };
     },
     computed: {
-      ...mapGetters(['authStatus']),
+      ...mapGetters(['authStatus', 'userName']),
     },
     methods: {
       login: function () {
 		   		let username = this.username
 		   		let password = this.password
 		   		this.$store.dispatch('authorizationUser', { 'username': username, 'password': password })
-		   		.then(() => this.$router.push('body'))
+		   		.then(() => this.$router.push('profile'))
 		   		.catch(err => console.log(err))
 		   	},
       logout: function () {

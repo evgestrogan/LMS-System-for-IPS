@@ -1,11 +1,13 @@
 import router from "@/router";
 
 const axios = require('axios').default;
+import VueJwtDecode from 'vue-jwt-decode'
 
 export default {
     state: {
         status: '',
   		refresh_token: localStorage.getItem('refresh_token') || '',
+        user: {}
     },
     mutations: {
         auth_request(state){
@@ -24,6 +26,9 @@ export default {
         },
         login_success(state){
             state.status = 'success'
+        },
+        appendUser(state, username){
+            state.user = username
         }
     },
     actions: {
@@ -38,6 +43,8 @@ export default {
 	                sessionStorage.setItem('access_token', access_token)
 	                axios.defaults.headers.common['Authorization'] = refresh_token
 	                commit('auth_success', refresh_token)
+                    // const user = VueJwtDecode.decode(access_token).user_id
+                    commit('appendUser', VueJwtDecode.decode(access_token).user_id)
 	                resolve(resp)
 	            })
 	            .catch(err => {
@@ -53,6 +60,7 @@ export default {
                 axios({url: 'http://127.0.0.1:8000/auth/verify/', data: {token: sessionStorage.getItem('access_token')}, method: 'POST'})
                 .then(resp => {
                     ctx.commit('login_success')
+                    commit('appendUser', VueJwtDecode.decode(sessionStorage.getItem('access_token')).user_id)
                     resolve(resp)
                 })
                 .catch(err => {
@@ -77,6 +85,7 @@ export default {
 	                sessionStorage.setItem('access_token', access_token)
                     axios.defaults.headers.common['Authorization'] = refresh_token
                     commit('auth_success', refresh_token)
+                    commit('appendUser', VueJwtDecode.decode(access_token).user_id)
 	                resolve(resp)
                 })
                 .catch(err => {
@@ -96,9 +105,14 @@ export default {
                 resolve()
             })
         },
+        getUser({commit}){
+            const user = VueJwtDecode.decode(sessionStorage.getItem('access_token')).user_id
+            commit('appendUser', user.username)
+        }
     },
     getters: {
         isLoggedIn: state => !!state.refresh_token,
         authStatus: state => state.status,
+        userName: state => state.user,
     },
 };
