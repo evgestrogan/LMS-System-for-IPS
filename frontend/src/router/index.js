@@ -4,7 +4,9 @@ import store from '../store/index'
 import authentication from '../views/Authentication.vue'
 import body from '../views/Profile.vue'
 import edit from '../components/Editor'
-import departments_list from '../components/Departments_list'
+import dashboard from '../components/Dashboard'
+import courseContent from '../components/CourseContent'
+import subjectContent from '../components/SubjectContent'
 
 Vue.use(VueRouter)
 
@@ -13,22 +15,54 @@ Vue.use(VueRouter)
     path: '/',
     name: 'Authentication',
     component: authentication,
+    meta: {
+      auth: false
+    },
   },
   {
     path: '/profile',
     name: 'Profile',
     component: body,
     meta: {
-      requiresAuth: true
+      auth: true
     },
+
     children: [
       {
         path: 'createCourse',
-        component: edit
+        component: edit,
+        meta: {
+          auth: true
+        },
       },
+
       {
-        path: 'departments',
-        component: departments_list
+        path: '/',
+        component: dashboard,
+        name: 'dashboard',
+        meta: {
+          auth: true
+        },
+
+        children: [
+          {
+            path: 'department_' +
+                ':id_department',
+            component: subjectContent,
+            name: 'subjectContent',
+            meta: {
+              auth: true
+            },
+          },
+          {
+            path: 'course_:id_course',
+            component: courseContent,
+            name: 'courseContent',
+            meta: {
+              auth: true
+            },
+          },
+        ]
       },
     ]
   },
@@ -39,19 +73,16 @@ const router = new VueRouter({
   mode: 'history',
 })
 
-router.beforeEach( (to, from, next) => {
-  if (to.path === '/profile/departments') store.dispatch('get_departmets_list')
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    store.dispatch('verifyToken')
-    .then(() => {
-      next()
-      // return
-    })
-        .catch(err => next('/'))
+router.beforeEach((to, from, next) => {
+  if (!to.matched.some(record => record.meta.auth)) {
+    store.dispatch('refreshTokens')
+    .then(() => next({ name: 'Profile' }))
+    .catch(() => next())
   } else {
-    next()
+    store.dispatch('refreshTokens')
+    .then(() => next())
+    .catch(() => next({ name: 'Authentication' }))
   }
 })
-
 
 export default router

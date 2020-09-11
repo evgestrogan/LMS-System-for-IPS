@@ -1,7 +1,6 @@
 <template>
   <div>
-    <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>
-    <p>Using v-html directive: <span v-html="this.editorData"></span></p>
+    <ckeditor ma-0 pa-0 fill-height :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>
   </div>
 </template>
 

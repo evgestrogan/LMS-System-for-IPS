@@ -1,26 +1,19 @@
 <template>
-  <div class="about">
-    <div class="row">
-      <div class="col-3">
-        <ContentMenu/>
-      </div>
-      <div class="col-9">
-        <router-view></router-view>
-      </div>
-    </div>
-  </div>
+  <v-row align="center" justify="center">
+    <router-view></router-view>
+  </v-row>
 </template>
 
 <script>
-  import ContentMenu from '../components/ContentMenu'
   import { mapGetters } from 'vuex';
 
   export default {
     name: "Profile",
-    components: {ContentMenu},
-
     computed: {
       ...mapGetters(['userName']),
     },
+    created() {
+      this.$store.dispatch('get_departmets_list')
+    }
   }
 </script>
