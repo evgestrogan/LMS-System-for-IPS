@@ -5,8 +5,9 @@ import VueJwtDecode from 'vue-jwt-decode'
 
 export default {
     state: {
-        status: false,
-        user: {}
+        client_status: false,
+        client: {},
+        profile: {},
     },
     mutations: {
         auth_success(state, resp){
@@ -14,17 +15,34 @@ export default {
             const access_token = resp.resp.data.access
             localStorage.setItem('refresh_token', refresh_token)
             axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token
-            state.user = VueJwtDecode.decode(access_token).user_id
-            state.status = true
+            const client = VueJwtDecode.decode(access_token)
+            state.client = client.user_id
+            state.client_status = true
+        },
+        state_profile_information(state, resp){
+            state.profile = resp
         },
         auth_error(state){
-            state.user = {}
             localStorage.removeItem('refresh_token')
             delete axios.defaults.headers.common['Authorization']
-            state.status = false
+            state.client = {}
+            state.profile = {}
+            state.client_status = false
         },
     },
     actions: {
+        get_user_information({commit}, id){
+            return new Promise((resolve, reject) => {
+                axios.get('http://127.0.0.1:8000/api/user_info/' + id.id)
+                .then(resp => {
+                    commit('state_profile_information', resp.data)
+                    resolve(resp)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+            })
+        },
         async authorizationUser({ commit }, user) {
             return await new Promise((resolve, reject) => {
 	            axios({url: 'http://127.0.0.1:8000/auth/access/',
@@ -33,7 +51,6 @@ export default {
                 })
 	            .then(resp => {
 	                commit('auth_success', { resp })
-                    router.push('/profile')
                     resolve(resp)
 	            })
 	            .catch(err => {
@@ -62,7 +79,8 @@ export default {
         },
     },
     getters: {
-        authStatus: state => state.status,
-        userName: state => state.user,
-    },
+        client_status: state => state.client_status,
+        client: state => state.client,
+        profile: state => state.profile,
+    }
 };

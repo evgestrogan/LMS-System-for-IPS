@@ -6,6 +6,8 @@ export default {
         departments_list: {},
         subjects_list: {},
         chapter_list: {},
+        subchapter: {},
+        question_list: {},
     },
     mutations: {
         state_drawer(state){
@@ -26,8 +28,33 @@ export default {
         clear_chapters_list(state){
             state.chapter_list = {}
         },
+        state_subchapter(state, list){
+            state.subchapter = list
+        },
+        state_question_list(state, list){
+            state.question_list = list
+        },
+        clear_question_list(state){
+            state.question_list = {}
+        },
     },
     actions: {
+        get_question_list({commit}, data) {
+            return new Promise((resolve, reject) => {
+	            axios({
+                  method: 'get',
+                  url: 'http://127.0.0.1:8000/api/question',
+                  headers: data
+                })
+	            .then(resp => {
+	                commit('state_question_list', resp.data)
+                    resolve(resp)
+	            })
+	            .catch(err => {
+	                reject(err)
+	            })
+	        })
+        },
         get_departmets_list({commit}) {
             return new Promise((resolve, reject) => {
 	            axios.get('http://127.0.0.1:8000/api/departments')
@@ -72,11 +99,25 @@ export default {
 	            })
 	        })
         },
+        get_subchapter({commit}, id){
+            return new Promise((resolve, reject) => {
+                axios.get('http://127.0.0.1:8000/api/subchapters/' + id.id)
+                .then(resp => {
+                    commit('state_subchapter', resp.data)
+                    resolve(resp)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+            })
+        },
     },
     getters: {
         return_drawer: state => state.drawer,
         return_departments_list: state => state.departments_list,
         return_subjects_list: state => state.subjects_list,
         return_chapters_list: state => state.chapter_list,
+        return_question_list: state => state.question_list,
+        return_subchapter: state => state.subchapter,
     },
 };

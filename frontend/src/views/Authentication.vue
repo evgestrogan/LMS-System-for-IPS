@@ -5,7 +5,7 @@
         <v-toolbar color="purple lighten-3" dark flat>
           <v-toolbar-title>Login form</v-toolbar-title>
         </v-toolbar>
-        <v-alert v-if="error" type="error" icon="error">
+        <v-alert v-if="error" type="error" icon="mdi-shield-alert-outline">
           Check your username or password
         </v-alert>
         <v-card-text>
@@ -23,6 +23,9 @@
 </template>
 
 <script>
+  import router from "@/router";
+  import {mapGetters} from "vuex";
+
   export default {
     data() {
       return {
@@ -31,11 +34,15 @@
         error: false
       };
     },
+    computed: {
+      ...mapGetters(['client']),
+    },
     methods: {
       login: function () {
         let username = this.username
         let password = this.password
         this.$store.dispatch('authorizationUser', { 'username': username, 'password': password })
+        .then(resp => {router.push({name: 'profile', params: { id_user: this.client.id }})})
         .catch(err => { this.error = true })
       },
     },

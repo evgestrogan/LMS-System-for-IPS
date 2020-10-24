@@ -1,16 +1,21 @@
 <template>
   <div class="col ma-16">
-      <v-card class="mb-6 pa-6 row" v-for="chapter in return_chapters_list" :key="chapter.id">
-        <v-card-text class="col">
-          <div>Курс: {{chapter.course.name_course}}</div>
-          <div class="display-1 text--primary">Глава: {{chapter.name_chapter}}</div>
-          <div>Результирующий тест: {{chapter.test.id}}</div>
-        </v-card-text>
-        <div class="row justify-end">
-          <v-card-actions>
-            <v-btn text color="deep-purple accent-4">Пройти итоговый тест</v-btn>
-          </v-card-actions>
-        </div>
+      <v-card class="mb-6 pa-6 row" v-for="(chapter, count) in return_chapters_list" :key="chapter.id">
+          <v-card-text class="col">
+              <div>Курс: {{chapter.course.name_course}}</div>
+              <v-list-group color="gray">
+                  <template v-slot:activator>
+                      Глава {{count + 1}}: {{chapter.name_chapter}}
+                  </template>
+                  <router-link v-for="subchapter in chapter.subchapters" :key="subchapter.id" :to="{ name: 'subchapterContent', params: { id_subchapter: subchapter.id }}"  class="text-decoration-none text-lg-body-1 font-weight-light"><v-list-item link>{{subchapter.name_subchapter}}</v-list-item></router-link>
+              </v-list-group>
+          </v-card-text>
+          <v-card-text class="col ">
+              <div class="text-end">Результирующий тест: {{chapter.test.title}}</div>
+              <v-card-actions class="justify-end">
+                  <router-link :to="{ name: 'testContent', params: { id_test: chapter.test.id }}" class="text-decoration-none text-lg-body-1 font-weight-light">Пройти итоговый тест</router-link>
+              </v-card-actions>
+          </v-card-text>
       </v-card>
   </div>
 </template>
