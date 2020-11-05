@@ -258,3 +258,4 @@ dmypy.json
 cython_debug/
 
 /backend/core/secret_settings.py
+!/backend/media/

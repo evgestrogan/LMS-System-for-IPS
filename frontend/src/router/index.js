@@ -1,20 +1,18 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '../store/index'
-import authentication from '../views/Authentication.vue'
-import body from '../views/Profile.vue'
-import edit from '../components/Editor'
-import courseContent from '../components/CourseContent'
-import subjectContent from '../components/SubjectContent'
-import subchapterContent from '../components/SubchapterContent'
-import profile from '../components/ProfileUser'
-import courseCreator from '../components/CourseCreator'
-import testContent from '../components/TestContent'
-import editCourse from '../components/CourseEditor'
+import authentication from '../views/AuthenticationPage.vue'
+import profile from '../views/ProfilePage'
+import department from '../views/DepartmentPage'
+import course from '../views/CoursePage'
+import subchapterPage from '../views/SubchapterPage'
+import testPage from '../views/TestPage'
+import course_constructorPage from '../views/CourseСonstructorPage'
+import chapters_constructorPage from '../views/ChaptersConstructorPage'
 
 Vue.use(VueRouter)
 
-  const routes = [
+const routes = [
   {
     path: '/',
     name: 'Authentication',
@@ -23,81 +21,71 @@ Vue.use(VueRouter)
       auth: false
     },
   },
-
   {
-    path: '/',
+    path: '/user/:id_user',
     name: 'Profile',
-    component: body,
+    component: profile,
     meta: {
       auth: true
     },
-
+  },
+  {
+    path: '/department/:id_department',
+    name: 'Department',
+    component: department,
+    meta: {
+      auth: true
+    },
+  },
+  {
+    path: '/department/:id_department/course/:id_course',
+    name: 'Course',
+    component: course,
+    meta: {
+      auth: true
+    },
+  },
+  {
+    path: '/department/:id_department/course/:id_course/subchapter/:id_subchapter',
+    name: 'SubchapterPage',
+    component: subchapterPage,
+    meta: {
+      auth: true
+    },
+  },
+  {
+    path: '/test/:id_test/',
+    name: 'TestPage',
+    component: testPage,
+    meta: {
+      auth: true
+    },
+  },
+  {
+    path: '/courseConstructor/',
+    name: 'CourseСonstructorPage',
+    component: course_constructorPage,
+    meta: {
+      auth: true
+    },
     children: [
       {
-        path: 'course_creator',
-        component: courseCreator,
-        name: 'course_creator',
-        meta: {
-          auth: true,
-        }
-      },
-      {
-        path: 'user_:id_user',
-        component: profile,
-        name: 'profile',
-        meta: {
-          auth: true,
-        },
-      },
-      {
-        path: 'createCourse',
-        component: edit,
+        path: '/courseConstructor/:id_course',
+        name: 'CourseEditorPage',
+        component: course_constructorPage,
         meta: {
           auth: true
         },
       },
-      {
-        path: 'department_:id_department',
-        component: subjectContent,
-        name: 'subjectContent',
-        meta: {
-          auth: true
-        },
-        props: true
-      },
-      {
-        path: 'department_:id_department/edit_course_:id_course',
-        component: editCourse,
-        name: 'editCourse',
-        meta: {
-          auth: true
-        },
-      },
-      {
-        path: 'department_:id_department/course_:id_course',
-        component: courseContent,
-        name: 'courseContent',
-        meta: {
-          auth: true
-        },
-      },
-      {
-        path: 'department_:id_department/course_:id_course/subchapter_:id_subchapter',
-        component: subchapterContent,
-        name: 'subchapterContent',
-        meta: {
-          auth: true
-        },
-      },
-      {
-        path: 'department_:id_department/course_:id_course/test_:id_test',
-        component: testContent,
-        name: 'testContent',
-        meta: {
-          auth: true
-        },
-      },
-    ]
+    ],
+  },
+  {
+    path: '/chaptersConstructor/:id_course',
+    name: 'ChaptersСonstructorPage',
+    component: chapters_constructorPage,
+    meta: {
+      auth: true
+    },
   },
 ]
 
@@ -108,11 +96,11 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   if (!to.matched.some(record => record.meta.auth)) {
-    store.dispatch('refreshTokens')
-    .then(() => next({ name: 'profile' }))
+    store.dispatch('refresh')
+    .then(() => next({ name: 'Profile', params: {id_user: store.getters.user_id}}))
     .catch(() => next())
   } else {
-    store.dispatch('refreshTokens')
+    store.dispatch('refresh')
     .then(() => next())
     .catch(() => next({ name: 'Authentication' }))
   }

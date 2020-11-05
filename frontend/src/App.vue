@@ -1,14 +1,16 @@
 <template>
   <v-app>
 
-    <v-navigation-drawer v-if=client_status :value=return_drawer app color="grey darken-4" width="350">
+    <v-navigation-drawer v-if=is_authenticated :value=drawer app color="grey darken-4" width="350">
       <SideBar></SideBar>
     </v-navigation-drawer>
 
     <NavBar></NavBar>
 
     <v-main class="grey lighten-4">
-      <router-view></router-view>
+      <v-row align="center" justify="center">
+        <router-view></router-view>
+      </v-row>
     </v-main>
 
   </v-app>
@@ -16,8 +18,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import NavBar from '../src/components/NavBar'
-import SideBar from "@/components/SideBar";
+import NavBar from './components/barsComponent/NavBar'
+import SideBar from "@/components/barsComponent/SideBar";
 
 export default {
   name: 'App',
@@ -26,7 +28,7 @@ export default {
     SideBar,
   },
   computed: {
-    ...mapGetters(['client_status', 'return_drawer'])
+    ...mapGetters(['is_authenticated', 'drawer'])
   },
 };
 </script>
